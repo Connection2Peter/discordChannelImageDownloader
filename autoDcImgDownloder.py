@@ -1,4 +1,5 @@
-import os, sys, time, requests
+import os, sys, time, requests, aniso8601
+from datetime import datetime
 
 
 
@@ -19,13 +20,21 @@ if not os.path.isdir(dirOutput):
 
 
 ##### Main Program
+modeDurat = True
+EntimeOut = 0
 pathOfUrl = "https://discord.com/api/v9/channels/{}/messages".format(channelId)
 psatMsgId = ""
 numPerReq = "100"
 ResHeader = {"authorization": selfToken}
 
+launchTimeStamp = datetime.timestamp(datetime(2022, 7, 17,  0,  0,  0))
+finishTimeStamp = datetime.timestamp(datetime(2022, 7, 17, 12,  0,  0))
+
 while True:
     time.sleep(1)
+
+    if EntimeOut > 100:
+            break
 
     if psatMsgId == "":
         Parameter = {"limit" : numPerReq}
@@ -37,19 +46,42 @@ while True:
         psatMsgId = Responses[-1]["id"]
 
         for resp in Responses:
-            for attach in resp["attachments"]:
-                time.sleep(0.2)
+            if modeDurat:
+                parseTime = datetime.timestamp(aniso8601.parse_datetime(resp["timestamp"]))
 
-                img = requests.get(attach["url"])
-                opt = os.path.join(dirOutput, attach["filename"])
+                if launchTimeStamp < parseTime and parseTime < finishTimeStamp:
+                    for attach in resp["attachments"]:
+                        time.sleep(0.2)
 
-                if os.path.exists(opt):
-                    opt = os.path.join(dirOutput, str(time.time()) + attach["filename"])
+                        img = requests.get(attach["url"])
+                        opt = os.path.join(dirOutput, attach["filename"])
 
-                with open(opt, "wb") as f:
-                    f.write(img.content)
+                        if os.path.exists(opt):
+                            opt = os.path.join(dirOutput, str(time.time()) + attach["filename"])
 
-                print(opt)
+                        with open(opt, "wb") as f:
+                            f.write(img.content)
+    
+                        print(opt)
+                else:
+                    EntimeOut += 1
+            else:
+                parseTime = datetime.timestamp(aniso8601.parse_datetime(resp["timestamp"]))
+
+                if launchTimeStamp < parseTime and parseTime < finishTimeStamp:
+                    for attach in resp["attachments"]:
+                        time.sleep(0.2)
+
+                        img = requests.get(attach["url"])
+                        opt = os.path.join(dirOutput, attach["filename"])
+
+                        if os.path.exists(opt):
+                            opt = os.path.join(dirOutput, str(time.time()) + attach["filename"])
+
+                        with open(opt, "wb") as f:
+                            f.write(img.content)
+    
+                        print(opt)
     except:
         break
 
