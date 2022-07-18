@@ -27,8 +27,8 @@ psatMsgId = ""
 numPerReq = "100"
 ResHeader = {"authorization": selfToken}
 
-launchTimeStamp = datetime.timestamp(datetime(2022, 7, 17,  0,  0,  0))
-finishTimeStamp = datetime.timestamp(datetime(2022, 7, 17, 12,  0,  0))
+launchTimeStamp = datetime.timestamp(datetime(2022, 7, 19, 12,  0,  0))
+finishTimeStamp = datetime.timestamp(datetime(2022, 7, 31, 0,  0,  0))
 
 while True:
     time.sleep(1)
